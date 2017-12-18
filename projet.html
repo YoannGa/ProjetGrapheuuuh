@@ -1,0 +1,45 @@
+<html> <!-- https://developers.google.com/chart/interactive/docs/gallery/scatterchart !-->
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+/*
+		var requestJson = 'donneesStatiquesToulouse.json';
+		var request = new XMLHttpRequest();
+		request.open('GET', requestJson);
+		request.responseType = 'json';
+		request.send();
+		*/
+		$.getJSON('donneesStatiquesToulouse.json', function(data){
+				
+			drawChart(data);
+		
+		});
+		/*
+		request.onload = function() {
+			var donneesJson = request.response;
+			drawChart(donneesJson);
+		}*/
+		
+      function drawChart(donneesJson) {
+        var data = donneesJson['longitude', 'latitude'];
+
+        var options = {
+          title: 'Age vs. Weight comparison',
+          hAxis: {title: 'Longitude', minValue: 0, maxValue: 15},
+          vAxis: {title: 'Latitude', minValue: 0, maxValue: 15},
+          legend: 'none'
+        };
+
+        var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));
+
+        chart.draw(data, options);
+      }
+    </script>
+  </head>
+  <body>
+    <div id="chart_div" style="width: 900px; height: 500px;"></div>
+  </body>
+</html>
