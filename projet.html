@@ -52,6 +52,7 @@
 				
 				let i = sousGraphe.length;
 				while(i < 20) {
+				// fais pas de foreacg stp. merci
 					jsonResponse.forEach(function(station) {
 						if(station.available_bikes < 5 && station.status == "OPEN") {
 							sousGraphe.push(station);
