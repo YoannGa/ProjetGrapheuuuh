@@ -1,121 +1,87 @@
 <html> <!-- https://developers.google.com/chart/interactive/docs/gallery/scatterchart !-->
   <head>
   	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-
+	<script src="script.js"></script>
+	<meta charset="UTF-8">
   </head>
 
-  <body>
-    <!--<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>!-->
-    
-	<!--
-    <script type="text/javascript">
-      google.charts.load('current', {'packages':['corechart']});
-      google.charts.setOnLoadCallback(drawChart);
+	<body>
+		<div id="graphDiv">
+			<script>
+			//https://api.jcdecaux.com/vls/v1/stations?contract=Toulouse&apiKey=90313b881f526a2b3fe7a265084db8ca6c33160c
+			//https://maps.googleapis.com/maps/api/directions/json?origin=43.604134687,1.4454207807&destination=43.6048526522,1.4452858767&alternatives=true&key=AIzaSyAG3bhdapKXj9TpHlic9DgluyQ0Be_Hw5A
+			// Clé GOOGLE AIzaSyBM-0ixPRRvq9xDGEbZLN1wVOhB8v406Y8
+			var xhr = new XMLHttpRequest();
 
-/*
-		var requestJson = 'donneesStatiquesToulouse.json';
-		var request = new XMLHttpRequest();
-		request.open('GET', requestJson);
-		request.responseType = 'json';
-		request.send();
-		*/
-		$.getJSON('donneesStatiquesToulouse.json', function(data){
+			xhr.open("GET", "https://api.jcdecaux.com/vls/v1/stations?contract=Toulouse&apiKey=90313b881f526a2b3fe7a265084db8ca6c33160c", true);
+			xhr.onreadystatechange= function () {
+										if(xhr.readyState == 4 && xhr.status == 200){
+											xhr.responseText;
+											jsonResponse = JSON.parse(xhr.responseText);
+											algorithme();
+										}						
+									}; 
+			xhr.send(null);
+			
+			function algorithme() {
+				let sousGraphe = constructionSousGraphe(); // Les n stations (sous-graphe)
+				console.log(sousGraphe);
+				//calculDist(jsonResponse.position.lat,jsonReponse.position.lng);
 				
-			drawChart(data);
-		
-		});
-		/*
-		request.onload = function() {
-			var donneesJson = request.response;
-			drawChart(donneesJson);
-		}*/
-		
-      function drawChart(donneesJson) {
-        var data = donneesJson['longitude', 'latitude'];
-
-        var options = {
-          title: 'Age vs. Weight comparison',
-          hAxis: {title: 'Longitude', minValue: 0, maxValue: 15},
-          vAxis: {title: 'Latitude', minValue: 0, maxValue: 15},
-          legend: 'none'
-        };
-
-        var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));
-
-        chart.draw(data, options);
-      }
-    </script>
-
-    !-->
-	<div id="graphDiv">
-	    <script>
-			Plotly.d3.csv('https://raw.githubusercontent.com/YoannGa/ProjetGrapheuuuh/master/toulouse.csv', function(err, rows){
-			  
-			  var classArray = unpack(rows, 'class');
-			  var classes = [...new Set(classArray)];
-
-			  function unpack(rows, key) {
-			    return rows.map(function(row) { return row[key]; });
-			  }
-
-			  var data = classes.map(function(classes) {
-			    var rowsFiltered = rows.filter(function(row) {
-			        return (row.class === classes);
-			    });
-			    return {
-			       type: 'scattermapbox',
-			       name: classes,
-			       lat: unpack(rowsFiltered, 'Latitude'),
-			       lon: unpack(rowsFiltered, 'Longitude')
-			    };
-			  });
-			  
-			  var layout = {
-			     title: 'Stations Velô Toulouse',
-			     font: {
-			         color: 'white'
-			     },
-			    dragmode: 'zoom', 
-			    mapbox: {
-			      center: {
-			        lat: 43.5992512, 
-			        lon: 1.4472688
-			      }, 
-			      domain: {
-			        x: [0, 1], 
-			        y: [0, 1]
-			      }, 
-			      style: 'dark', 
-			      zoom: 11
-			    }, 
-			    margin: {
-			      r: 20, 
-			      t: 40, 
-			      b: 20, 
-			      l: 20, 
-			      pad: 0
-			    }, 
-			    paper_bgcolor: '#191A1A', 
-			    plot_bgcolor: '#191A1A', 
-			    showlegend: true,
-			    annotations: [{
-			       x: 0,
-			       y: 0,
-			       xref: 'paper',
-			       yref: 'paper',
-			         text: 'Source: <a href="https://data.nasa.gov/Space-Science/Meteorite-Landings/gh4g-9sfh" style="color: rgb(255,255,255)">NASA</a>',
-			         showarrow: false
-			     }]
-			  };
-			  
-			  Plotly.setPlotConfig({
-			    mapboxAccessToken: 'pk.eyJ1IjoiZXRwaW5hcmQiLCJhIjoiY2luMHIzdHE0MGFxNXVubTRxczZ2YmUxaCJ9.hwWZful0U2CQxit4ItNsiQ'
-			  });
-			  
-			  Plotly.plot('graphDiv', data, layout);
-			});
-	    </script>
-	</div>
-    <!-- <div id="chart_div" style="width: 900px; height: 500px;"></div> !-->
-  </body>
+				/*
+				jsonResponse.lesquestions.forEach(function(question){ 
+					contenu += '<fieldset id="'+question.idQ+'"><legend>'+question.intituleQ+'</legend><input type="button" value="Vérif" id="'+question.idQ+'">';
+					question.reponses.forEach(function(reponse){
+						contenu += '<section> <input type=checkbox id="'+reponse.idR+'">'+reponse.intituleR+'</input></section>';
+					});
+					contenu += '</fieldset>';
+				});
+				contenu += '<section><input type="submit" value="Enregistrer" id="butSubmit"> <input type="reset" value="Recommencer"></section>';
+				
+				document.querySelector("form").innerHTML = contenu;
+				
+				let noeudBoutton = document.querySelectorAll('input[type=button]');
+				for(let i = 0; i < noeudBoutton.length; i++){
+					noeudBoutton[i].addEventListener('click', monGestionnaireBouttonJson);
+				}
+				*/
+			}
+			
+			function constructionSousGraphe() {
+				let sousGraphe = [];
+				
+				let i = sousGraphe.length;
+				while(i < 20) {
+					jsonResponse.forEach(function(station) {
+						if(station.available_bikes < 5 && station.status == "OPEN") {
+							sousGraphe.push(station);
+							console.log("je suis dans le if");
+							i ++;
+						}
+					});
+					console.log("je suis dans le while, i = " + i);
+				}
+				return sousGraphe;
+			}
+			
+			/*
+				let latAr = 43.604134687;
+				let lngAr = 1.4454207807;
+				let latDest = 43.6048526522;
+				let lngDest = 1.4452858767;
+			*/
+			
+			function calculDist(latA, lngA, latD, lngD) {
+				let latAr = latA;
+				let lngAr = lngA;
+				let latDest = latD;
+				let lngDest = lngD;
+				
+				let googleDist = "https://maps.googleapis.com/maps/api/directions/json?origin=" + latAr + "," + longAr + "&destination=" + latDest + "," + longDest + "&alternatives=true&key=AIzaSyBM-0ixPRRvq9xDGEbZLN1wVOhB8v406Y8";
+			
+				return googleDist;
+			}
+			</script>
+		</div>
+	</body>
 </html>
