@@ -25,7 +25,8 @@
 			
 			function algorithme() {
 				let sousGraphe = constructionSousGraphe(); // Les n stations (sous-graphe)
-				console.log(sousGraphe);
+				console.log("Mon sous graphe : " + sousGraphe);
+				//afficherPoints(sousGraphe);
 				//calculDist(jsonResponse.position.lat,jsonReponse.position.lng);
 				
 				/*
@@ -49,19 +50,15 @@
 			
 			function constructionSousGraphe() {
 				let sousGraphe = [];
-				
 				let i = sousGraphe.length;
-				while(i < 20) {
-				// fais pas de foreacg stp. merci
-					jsonResponse.forEach(function(station) {
-						if(station.available_bikes < 5 && station.status == "OPEN") {
-							sousGraphe.push(station);
-							console.log("je suis dans le if");
-							i ++;
-						}
-					});
-					console.log("je suis dans le while, i = " + i);
-				}
+				
+				jsonResponse.forEach(function(station) {
+					if(station.available_bikes < 5 && station.status == "OPEN" && i < 20) {
+						sousGraphe.push(station);
+						i ++;
+					}
+					console.log("i = " + i);
+				});
 				return sousGraphe;
 			}
 			
